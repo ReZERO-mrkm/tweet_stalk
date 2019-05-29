@@ -49,7 +49,8 @@ while True:
             req = sess.get(TL, params=params1)
             timeline = json.loads(req.text)
             twi = timeline[0]["text"]
-            if(tmp != twi):
+            if (tmp != twi):
+                print(f'Sending {twi["user"]["name"]} tweet.')
                 payload = {'content': twi['user']['name'] + 'のつぶやき' + twi['text']}
                 requests.post(discord_webhook_url, data=payload)
                 first -= 1
