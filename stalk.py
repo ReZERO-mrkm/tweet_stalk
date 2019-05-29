@@ -4,6 +4,8 @@ from urllib import request
 import config
 from time import sleep
 import requests
+import traceback
+import sys
 
 keys = {
     "CK": config.api_key,
@@ -27,28 +29,34 @@ params1 = {
 
 first = 0
 while True:
-    if first == 0:
-        req = sess.get(TL, params=params1)
-        timeline = json.loads(req.text)
-        twi = timeline[0]
-        first += 1
-    elif first == 1:
-        payload = {'content': twi['user']['name']+ 'のつぶやき' + twi['text']}
-        requests.post(discord_webhook_url, data=payload)
-        first += 1
-    elif first == 2:
-        req = sess.get(TL, params=params1)
-        timeline = json.loads(req.text)
-        twi = timeline[0]["text"]
-        tmp = twi
-        first += 1
-    elif first == 3:
-        req = sess.get(TL, params=params1)
-        timeline = json.loads(req.text)
-        twi = timeline[0]["text"]
-        if(tmp != twi):
-            payload = {'content': twi['user']['name'] + 'のつぶやき' + twi['text']}
+    try:
+        if first == 0:
+            req = sess.get(TL, params=params1)
+            timeline = json.loads(req.text)
+            twi = timeline[0]
+            first += 1
+        elif first == 1:
+            payload = {'content': twi['user']['name']+ 'のつぶやき' + twi['text']}
             requests.post(discord_webhook_url, data=payload)
-            first -= 1
-    sleep(30)
+            first += 1
+        elif first == 2:
+            req = sess.get(TL, params=params1)
+            timeline = json.loads(req.text)
+            twi = timeline[0]["text"]
+            tmp = twi
+            first += 1
+        elif first == 3:
+            req = sess.get(TL, params=params1)
+            timeline = json.loads(req.text)
+            twi = timeline[0]["text"]
+            if(tmp != twi):
+                payload = {'content': twi['user']['name'] + 'のつぶやき' + twi['text']}
+                requests.post(discord_webhook_url, data=payload)
+                first -= 1
+    except KeyboardInterrupt:
+        sys.exit()
+    except:
+        traceback.print_exc()
+    finally:
+        sleep(30)
     
