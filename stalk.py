@@ -22,7 +22,7 @@ discord_webhook_url = config.discord_url
 
 tmps = dict()
 firsts = dict()
-line = "=" * 100
+line = "-" * 30
 for i in userIDs:
     firsts[i] = 0
 while True:
