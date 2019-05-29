@@ -21,7 +21,9 @@ discord_webhook_url = config.discord_url
 
 
 tmps = dict()
-first = 0
+firsts = dict()
+for i in userIDs:
+    firsts[i] = 0
 while True:
     for i in userIDs:
         params1 = {
@@ -32,22 +34,22 @@ while True:
             "include_rts": True
         }
         try:
-            if first == 0:
+            if firsts[i] == 0:
                 req = sess.get(TL, params=params1)
                 timeline = json.loads(req.text)
                 twi = timeline[0]
-                first += 1
-            elif first == 1:
+                firsts[i] += 1
+            elif firsts[i] == 1:
                 payload = {'content': twi['user']['name']+ 'のつぶやき：' + twi['text']}
                 requests.post(discord_webhook_url, data=payload)
-                first += 1
-            elif first == 2:
+                firsts[i] += 1
+            elif firsts[i] == 2:
                 req = sess.get(TL, params=params1)
                 timeline = json.loads(req.text)
                 twi = timeline[0]
                 tmps[twi['user']['name']] = twi
-                first += 1
-            elif first == 3:
+                firsts[i] += 1
+            elif firsts[i] == 3:
                 req = sess.get(TL, params=params1)
                 timeline = json.loads(req.text)
                 twi = timeline[0]
@@ -55,7 +57,7 @@ while True:
                     print(f'Sending {twi["user"]["name"]} tweet.')
                     payload = {'content': twi['user']['name'] + 'のつぶやき：' + twi['text']}
                     requests.post(discord_webhook_url, data=payload)
-                    first -= 1
+                    firsts[i] -= 1
         except KeyboardInterrupt:
             sys.exit()
         except:
