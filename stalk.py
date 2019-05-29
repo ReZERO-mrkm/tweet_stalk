@@ -20,7 +20,7 @@ userIDs = config.user_ids
 discord_webhook_url = config.discord_url
 
 
-
+tmps = dict()
 first = 0
 while True:
     for i in userIDs:
@@ -44,14 +44,14 @@ while True:
             elif first == 2:
                 req = sess.get(TL, params=params1)
                 timeline = json.loads(req.text)
-                twi = timeline[0]["text"]
-                tmp = twi
+                twi = timeline[0]
+                tmps[twi['user']['name']] = twi
                 first += 1
             elif first == 3:
                 req = sess.get(TL, params=params1)
                 timeline = json.loads(req.text)
                 twi = timeline[0]["text"]
-                if (tmp != twi):
+                if (tmps[twi['user']['name']] != twi):
                     print(f'Sending {twi["user"]["name"]} tweet.')
                     payload = {'content': twi['user']['name'] + 'のつぶやき：' + twi['text']}
                     requests.post(discord_webhook_url, data=payload)
