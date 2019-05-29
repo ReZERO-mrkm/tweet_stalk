@@ -22,10 +22,12 @@ discord_webhook_url = config.discord_url
 
 tmps = dict()
 firsts = dict()
+line = "=" * 100
 for i in userIDs:
     firsts[i] = 0
 while True:
     for i in userIDs:
+        print(f'Processing {i} tweet')
         params1 = {
             "screen_name": i,
             "count": 1,
@@ -39,23 +41,29 @@ while True:
                 timeline = json.loads(req.text)
                 twi = timeline[0]
                 firsts[i] += 1
-            elif firsts[i] == 1:
+                print(f'First Sending {twi["user"]["name"]} tweet.')
                 payload = {'content': twi['user']['name']+ 'のつぶやき：' + twi['text']}
+                requests.post(discord_webhook_url, data=payload)
+                sleep(1)
+                payload = {'content': line}
                 requests.post(discord_webhook_url, data=payload)
                 firsts[i] += 1
             elif firsts[i] == 2:
                 req = sess.get(TL, params=params1)
                 timeline = json.loads(req.text)
                 twi = timeline[0]
-                tmps[twi['user']['name']] = twi
+                tmps[i] = twi
                 firsts[i] += 1
             elif firsts[i] == 3:
                 req = sess.get(TL, params=params1)
                 timeline = json.loads(req.text)
                 twi = timeline[0]
-                if (tmps[twi['user']['name']] != twi):
+                if (tmps[i] != twi):
                     print(f'Sending {twi["user"]["name"]} tweet.')
                     payload = {'content': twi['user']['name'] + 'のつぶやき：' + twi['text']}
+                    requests.post(discord_webhook_url, data=payload)
+                    sleep(1)
+                    payload = {'content': line}
                     requests.post(discord_webhook_url, data=payload)
                     firsts[i] -= 1
         except KeyboardInterrupt:
