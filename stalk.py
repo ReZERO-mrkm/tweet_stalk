@@ -50,7 +50,7 @@ while True:
             elif first == 3:
                 req = sess.get(TL, params=params1)
                 timeline = json.loads(req.text)
-                twi = timeline[0]["text"]
+                twi = timeline[0]
                 if (tmps[twi['user']['name']] != twi):
                     print(f'Sending {twi["user"]["name"]} tweet.')
                     payload = {'content': twi['user']['name'] + 'のつぶやき：' + twi['text']}
